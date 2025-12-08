@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Volunteer - LGD Check In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 50px 40px;
+            max-width: 480px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 35px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .preview-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .preview-section.active {
+            display: block;
+        }
+        
+        #canvas {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin-bottom: 24px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .button-group button {
+            flex: 1;
+            padding: 14px;
+            font-size: 15px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .download-btn:hover {
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+        
+        .back-btn:hover {
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #d5f4e6 0%, #c8e6c9 100%);
+            color: #27ae60;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            font-weight: 600;
+            border: 2px solid #27ae60;
+        }
+        
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        button.loading .loader {
+            display: block;
+        }
+        
+        button.loading .btn-text {
+            display: none;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #7f8c8d;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            color: #7f8c8d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .social-links a.github:hover {
+            background: #333;
+            color: white;
+        }
+        
+        .social-links a.linkedin:hover {
+            background: #0077b5;
+            color: white;
+        }
+        
+        .social-links a.instagram:hover {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+        
+        .social-links svg {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="container">
+            <div id="formSection">
+                <div class="logo-container">
+                    <img src="image/Picture1.png" alt="Logo" class="logo">
+                    <h1>LGD Session Check-In</h1>
+                    <p class="subtitle">Complete your registration to mark attendance and receive your personalized background</p>
+                </div>
+                
+                <form id="attendanceForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your Full Name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="class">Class</label>
+                        <input type="text" id="class" name="class" placeholder="AB-48-INT" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nim">Student ID (NIM)</label>
+                        <input type="text" id="nim" name="nim" placeholder="20230123456" required>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn">
+                        <span class="btn-text">✨ Submit</span>
+                        <div class="loader"></div>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="preview-section" id="previewSection">
+                <div class="success-message" id="successMessage">
+                    ✓ Attendance marked successfully!
+                </div>
+                <canvas id="canvas"></canvas>
+                <div class="button-group">
+                    <button class="download-btn" id="downloadBtn">
+                        <span class="btn-text">↓ Download</span>
+                    </button>
+                    <button class="back-btn" id="backBtn">
+                        <span class="btn-text">← Back</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-text">
+                <span>© Student Volunteer <span id="currentYear"></span> | Made by TIslamKanon</span>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/tislamkanon" target="_blank" rel="noopener noreferrer" class="github" title="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+                <a href="https://linkedin.com/in/tislamkanon" target="_blank" rel="noopener noreferrer" class="linkedin" title="LinkedIn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                </a>
+                <a href="https://instagram.com/tislamkanon" target="_blank" rel="noopener noreferrer" class="instagram" title="Instagram">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        const form = document.getElementById('attendanceForm');
+        const formSection = document.getElementById('formSection');
+        const previewSection = document.getElementById('previewSection');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const backBtn = document.getElementById('backBtn');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        const nameInput = document.getElementById('name');
+        const nimInput = document.getElementById('nim');
+        const classInput = document.getElementById('class');
+        
+        canvas.width = 1280;
+        canvas.height = 720;
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = nameInput.value.trim();
+            const nim = nimInput.value.trim();
+            const classVal = classInput.value.trim();
+            
+            if (name && nim && classVal) {
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                
+                await generateBackground(name, nim, classVal);
+                await sendToGoogleSheets(name, nim, classVal);
+                
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                
+                formSection.style.display = 'none';
+                previewSection.classList.add('active');
+                successMessage.classList.add('show');
+            }
+        });
+        
+        async function generateBackground(name, nim, classVal) {
+            return new Promise((resolve) => {
+                const bgImage = new Image();
+                bgImage.crossOrigin = "anonymous";
+                
+                bgImage.src = 'https://i.ibb.co/LdmLhL6Y/Student-Volunteer-LGD-SESSION-Batch-6.png';
+                
+                bgImage.onload = () => {
+                    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#3d3d3d';
+                    ctx.textAlign = 'left';
+                    
+                    ctx.font = 'bold 32px Arial, sans-serif';
+                    ctx.fillText(name, 165, 203);
+                    
+                    ctx.font = '28px Arial, sans-serif';
+                    ctx.fillText(classVal, 165, 243);
+                    
+                    ctx.font = '28px Arial, sans-serif';
+                    ctx.fillText(nim, 165, 283);
+                    
+                    resolve();
+                };
+                
+                bgImage.onerror = () => {
+                    alert('Background image failed to load. Please check the image URL.');
+                    
+                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    gradient.addColorStop(0, '#f5f5f5');
+                    gradient.addColorStop(1, '#e0e0e0');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 48px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Student Volunteer', canvas.width / 2, 100);
+                    ctx.font = '32px Arial';
+                    ctx.fillText(`Name: ${name}`, canvas.width / 2, 250);
+                    ctx.fillText(`Class: ${classVal}`, canvas.width / 2, 320);
+                    ctx.fillText(`NIM: ${nim}`, canvas.width / 2, 390);
+                    
+                    resolve();
+                };
+            });
+        }
+        
+        async function sendToGoogleSheets(name, nim, classVal) {
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSVzw2_FVtiKcp7ORCTt5_CMY8vsCYmHEuB8TMLRn6SYDjRUp_xoJ-NYb5OcHbpPbU/exec';
+            
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        nim: nim,
+                        class: classVal,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                console.log('Data sent successfully');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            const fileName = `LGD-${nameInput.value.replace(/\s+/g, '-')}-${nimInput.value}.png`;
+            link.download = fileName;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            formSection.style.display = 'block';
+            previewSection.classList.remove('active');
+            successMessage.classList.remove('show');
+            form.reset();
+        });
+    </script>
+</body>
+</html>
